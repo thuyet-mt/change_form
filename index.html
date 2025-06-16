@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đăng ký VĐV</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="max-w-2xl mx-auto p-6 bg-white mt-10 rounded-xl shadow-lg">
+    <h2 class="text-2xl font-bold mb-4 text-center">Form Đăng ký VĐV</h2>
+    <form id="vdvForm" class="space-y-4">
+      <div>
+        <label class="block font-medium">VĐV cần thay thế</label>
+        <input type="text" name="oldPlayer" class="w-full border rounded p-2" required>
+      </div>
+      <div>
+        <label class="block font-medium">Đội cũ</label>
+        <input type="text" name="oldTeam" class="w-full border rounded p-2" required>
+      </div>
+      <div>
+        <label class="block font-medium">VĐV bổ sung / thay thế</label>
+        <input type="text" name="newPlayer" class="w-full border rounded p-2" required>
+      </div>
+      <div>
+        <label class="block font-medium">Đội mới</label>
+        <input type="text" name="newTeam" class="w-full border rounded p-2" required>
+      </div>
+      <div>
+        <label class="block font-medium">Năm sinh</label>
+        <input type="text" name="birthYear" class="w-full border rounded p-2">
+      </div>
+      <div>
+        <label class="block font-medium">Hạng đăng ký</label>
+        <input type="text" name="rank" class="w-full border rounded p-2">
+      </div>
+      <div>
+        <label class="block font-medium">Hình thức</label>
+        <select name="formType" class="w-full border rounded p-2">
+          <option value="Bổ sung">Bổ sung</option>
+          <option value="Thay thế">Thay thế</option>
+          <option value="Chuyển nhượng">Chuyển nhượng</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-medium">Lệ phí (VND)</label>
+        <input type="number" name="fee" class="w-full border rounded p-2">
+      </div>
+      <div>
+        <label class="block font-medium">Hạng / điểm tham chiếu ở giải khác</label>
+        <input type="text" name="referenceRank" class="w-full border rounded p-2">
+      </div>
+      <div>
+        <label class="block font-medium">Hình ảnh VĐV mới</label>
+        <input type="file" id="imageInput" accept="image/*" class="block w-full border rounded p-2">
+        <div id="preview" class="mt-2 text-sm text-gray-600"></div>
+      </div>
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
+        Gửi đăng ký
+      </button>
+      <div id="status" class="text-center mt-4 font-semibold text-green-600"></div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("vdvForm");
+    const imageInput = document.getElementById("imageInput");
+    const preview = document.getElementById("preview");
+    const statusText = document.getElementById("status");
+
+    const scriptURL = "PASTE_YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE";
+
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files[0];
+      if (file) {
+        preview.textContent = `Đã chọn: ${file.name}`;
+      } else {
+        preview.textContent = "";
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {
+        oldPlayer: formData.get("oldPlayer"),
+        oldTeam: formData.get("oldTeam"),
+        newPlayer: formData.get("newPlayer"),
+        newTeam: formData.get("newTeam"),
+        birthYear: formData.get("birthYear"),
+        rank: formData.get("rank"),
+        formType: formData.get("formType"),
+        fee: formData.get("fee"),
+        referenceRank: formData.get("referenceRank"),
+        imageUrl: imageInput.files.length > 0 ? imageInput.files[0].name : ""
+      };
+
+      try {
+        await fetch(scriptURL, {
+          method: "POST",
+          body: JSON.stringify(data)
+        });
+        statusText.textContent = "Gửi thành công!";
+        form.reset();
+        preview.textContent = "";
+      } catch (err) {
+        statusText.textContent = "Gửi thất bại. Vui lòng thử lại.";
+        statusText.classList.remove("text-green-600");
+        statusText.classList.add("text-red-600");
+      }
+    });
+  </script>
+</body>
+</html>
