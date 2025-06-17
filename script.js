@@ -1,3 +1,8 @@
+import { storage, db } from './firebase.js';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import firebase from 'firebase/app';
+
 // URL của Google Apps Script
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzy2wkwByCVEVuC227oMPjyqjSOA1j1gksxTiMgi5nwDuZE1wLrEJKeyg9V3KJFUc_wZw/exec';
 
@@ -149,5 +154,78 @@ async function submitToGoogleSheet(data) {
     } catch (error) {
         console.error('Submit error:', error);
         throw new Error('Submit failed: ' + error.message);
+    }
+}
+
+async function uploadImage(file) {
+    try {
+        // Tạo tên file duy nhất
+        const timestamp = Date.now();
+        const fileName = `${timestamp}_${file.name}`;
+        
+        // Upload to Firebase Storage
+        const storageRef = storage.ref(`athlete-images/${fileName}`);
+        const snapshot = await storageRef.put(file);
+        const downloadURL = await snapshot.ref.getDownloadURL();
+        
+        return downloadURL;
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        throw error;
+    }
+}
+
+// Hàm chuyển đổi file thành base64
+async function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            const base64String = reader.result.split(',')[1];
+            resolve({
+                filename: file.name,
+                mimeType: file.type,
+                bytes: base64String
+            });
+        };
+        reader.onerror = error => reject(error);
+    });
+}
+
+// Hàm submit form
+async function submitForm(formData) {
+    try {
+        // Chuyển đổi file thành base64
+        const [idCardImage, portraitImage] = await Promise.all([
+            fileToBase64(formData.idCardImage),
+            fileToBase64(formData.portraitImage)
+        ]);
+
+        // Gửi dữ liệu lên server
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                type: formData.type,
+                athleteName: formData.athleteName,
+                birthYear: formData.birthYear,
+                registrationClass: formData.registrationClass,
+                referenceClass: formData.referenceClass,
+                teamOrigin: formData.teamOrigin,
+                idCardImage,
+                portraitImage
+            })
+        });
+
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.message);
+        }
+        return result;
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        throw error;
     }
 } 
