@@ -73,63 +73,81 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Hàm upload ảnh lên Google Drive
 async function uploadImageToDrive(file) {
-    // Chuyển file thành base64
-    const base64Data = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const base64 = reader.result.split(',')[1];
-            resolve(base64);
+    try {
+        // Chuyển file thành base64
+        const base64Data = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64 = reader.result.split(',')[1];
+                resolve(base64);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        const data = {
+            action: 'uploadImage',
+            fileName: file.name,
+            fileData: base64Data
         };
-        reader.readAsDataURL(file);
-    });
 
-    const data = {
-        action: 'uploadImage',
-        fileName: file.name,
-        fileData: base64Data
-    };
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
 
-    const response = await fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-    });
+        const text = await response.text();
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (e) {
+            console.error('Response text:', text);
+            throw new Error('Invalid server response');
+        }
 
-    if (!response.ok) {
-        throw new Error('Upload failed');
+        if (result.status === 'error') {
+            throw new Error(result.message || 'Upload failed');
+        }
+
+        return result.imageUrl;
+    } catch (error) {
+        console.error('Upload error:', error);
+        throw new Error('Upload failed: ' + error.message);
     }
-
-    const result = await response.json();
-    if (result.status === 'error') {
-        throw new Error(result.message);
-    }
-
-    return result.imageUrl;
 }
 
 // Hàm gửi dữ liệu lên Google Sheet
 async function submitToGoogleSheet(data) {
-    const response = await fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            action: 'submitData',
-            ...data
-        })
-    });
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'submitData',
+                ...data
+            })
+        });
 
-    if (!response.ok) {
-        throw new Error('Submit failed');
+        const text = await response.text();
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (e) {
+            console.error('Response text:', text);
+            throw new Error('Invalid server response');
+        }
+
+        if (result.status === 'error') {
+            throw new Error(result.message || 'Submit failed');
+        }
+
+        return result;
+    } catch (error) {
+        console.error('Submit error:', error);
+        throw new Error('Submit failed: ' + error.message);
     }
-
-    const result = await response.json();
-    if (result.status === 'error') {
-        throw new Error(result.message);
-    }
-
-    return result;
 } 
