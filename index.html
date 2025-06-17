@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Đăng ký VĐV</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    body { font-family: sans-serif; padding: 20px; max-width: 700px; margin: auto; }
     label { font-weight: bold; display: block; margin-top: 15px; }
     input, select { width: 100%; padding: 8px; margin-top: 5px; }
     button { margin-top: 20px; padding: 10px 20px; }
@@ -16,7 +16,17 @@
 <body>
   <h2>Đăng ký VĐV có ảnh</h2>
   <form id="vdvForm">
-    <label for="name">Tên VĐV:</label>
+    <label for="type">Hình thức:</label>
+    <select name="type" required>
+      <option value="Bổ sung">Bổ sung</option>
+      <option value="Thay thế">Thay thế</option>
+      <option value="Chuyển nhượng">Chuyển nhượng</option>
+    </select>
+
+    <label for="oldPlayer">VĐV cũ (nếu có):</label>
+    <input type="text" name="oldPlayer">
+
+    <label for="name">VĐV mới:</label>
     <input type="text" name="name" required>
 
     <label for="birthYear">Năm sinh:</label>
@@ -24,6 +34,12 @@
 
     <label for="rank">Hạng đăng ký:</label>
     <input type="text" name="rank" required>
+
+    <label for="reference">Hạng/Thành tích tham chiếu:</label>
+    <input type="text" name="reference">
+
+    <label for="fromTeam">Đến từ đội (nếu có):</label>
+    <input type="text" name="fromTeam">
 
     <label for="photo">Ảnh VĐV:</label>
     <input type="file" name="photo" id="photo" accept="image/*" required>
@@ -46,9 +62,13 @@
         const base64Image = reader.result.split(",")[1];
 
         const data = {
+          type: form.type.value,
+          oldPlayer: form.oldPlayer.value,
           name: form.name.value,
           birthYear: form.birthYear.value,
           rank: form.rank.value,
+          reference: form.reference.value,
+          fromTeam: form.fromTeam.value,
           imageBase64: base64Image,
           fileName: file.name
         };
