@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Hàm upload ảnh lên Google Drive
 async function uploadImageToDrive(file) {
     // Thay thế URL này bằng URL của Google Apps Script của bạn
-    const scriptUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbzy2wkwByCVEVuC227oMPjyqjSOA1j1gksxTiMgi5nwDuZE1wLrEJKeyg9V3KJFUc_wZw/exec';
     
     const formData = new FormData();
     formData.append('file', file);
