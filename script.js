@@ -1,8 +1,3 @@
-import { storage, db } from './firebase.js';
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import firebase from 'firebase/app';
-
 // URL của Google Apps Script
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzy2wkwByCVEVuC227oMPjyqjSOA1j1gksxTiMgi5nwDuZE1wLrEJKeyg9V3KJFUc_wZw/exec';
 
