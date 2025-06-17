@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const imagePreview = document.getElementById('imagePreview');
     const formTypeInputs = document.querySelectorAll('input[name="formType"]');
 
+    // URL của Google Apps Script
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzy2wkwByCVEVuC227oMPjyqjSOA1j1gksxTiMgi5nwDuZE1wLrEJKeyg9V3KJFUc_wZw/exec';
+
     // Xử lý hiển thị/ẩn phần VĐV cũ dựa vào hình thức
     formTypeInputs.forEach(input => {
         input.addEventListener('change', function() {
@@ -70,31 +73,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Hàm upload ảnh lên Google Drive
 async function uploadImageToDrive(file) {
-    // Thay thế URL này bằng URL của Google Apps Script của bạn
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbzy2wkwByCVEVuC227oMPjyqjSOA1j1gksxTiMgi5nwDuZE1wLrEJKeyg9V3KJFUc_wZw/exec';
-    
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await fetch(scriptUrl + '?action=uploadImage', {
-        method: 'POST',
-        body: formData
+    // Chuyển file thành base64
+    const base64Data = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64 = reader.result.split(',')[1];
+            resolve(base64);
+        };
+        reader.readAsDataURL(file);
     });
 
-    if (!response.ok) {
-        throw new Error('Upload failed');
-    }
+    const data = {
+        action: 'uploadImage',
+        fileName: file.name,
+        fileData: base64Data
+    };
 
-    const data = await response.json();
-    return data.imageUrl;
-}
-
-// Hàm gửi dữ liệu lên Google Sheet
-async function submitToGoogleSheet(data) {
-    // Thay thế URL này bằng URL của Google Apps Script của bạn
-    const scriptUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
-    
-    const response = await fetch(scriptUrl + '?action=submitData', {
+    const response = await fetch(SCRIPT_URL, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -103,8 +98,38 @@ async function submitToGoogleSheet(data) {
     });
 
     if (!response.ok) {
+        throw new Error('Upload failed');
+    }
+
+    const result = await response.json();
+    if (result.status === 'error') {
+        throw new Error(result.message);
+    }
+
+    return result.imageUrl;
+}
+
+// Hàm gửi dữ liệu lên Google Sheet
+async function submitToGoogleSheet(data) {
+    const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            action: 'submitData',
+            ...data
+        })
+    });
+
+    if (!response.ok) {
         throw new Error('Submit failed');
     }
 
-    return await response.json();
+    const result = await response.json();
+    if (result.status === 'error') {
+        throw new Error(result.message);
+    }
+
+    return result;
 } 
