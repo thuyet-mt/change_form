@@ -11,6 +11,7 @@
     input, select { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
     button { margin-top: 20px; padding: 10px 20px; }
     #status { margin-top: 20px; font-weight: bold; }
+    pre { background: #eee; padding: 10px; white-space: pre-wrap; word-break: break-word; }
   </style>
 </head>
 <body>
@@ -46,16 +47,23 @@
 
     <button type="submit">Gửi đăng ký</button>
     <div id="status"></div>
+    <pre id="debugLog"></pre>
   </form>
 
   <script>
     const form = document.getElementById("vdvForm");
     const statusText = document.getElementById("status");
+    const debugLog = document.getElementById("debugLog");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const file = document.getElementById("photo").files[0];
+      if (!file) {
+        statusText.textContent = "Vui lòng chọn ảnh.";
+        return;
+      }
+
       const reader = new FileReader();
 
       reader.onloadend = async function () {
@@ -73,6 +81,8 @@
           fileName: file.name
         };
 
+        debugLog.textContent = "Sending data:\n" + JSON.stringify(data, null, 2);
+
         try {
           const response = await fetch("https://script.google.com/macros/s/AKfycbzy2wkwByCVEVuC227oMPjyqjSOA1j1gksxTiMgi5nwDuZE1wLrEJKeyg9V3KJFUc_wZw/exec", {
             method: "POST",
@@ -84,8 +94,10 @@
 
           const text = await response.text();
           statusText.textContent = text;
+          debugLog.textContent += "\n\nResponse:\n" + text;
         } catch (err) {
           statusText.textContent = "Đã có lỗi xảy ra!";
+          debugLog.textContent += "\n\nFetch error:\n" + err.toString();
           console.error("Lỗi:", err);
         }
       };
