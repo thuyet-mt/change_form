@@ -1,12 +1,12 @@
+// URL của Google Apps Script
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzy2wkwByCVEVuC227oMPjyqjSOA1j1gksxTiMgi5nwDuZE1wLrEJKeyg9V3KJFUc_wZw/exec';
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('athleteForm');
     const oldAthleteSection = document.getElementById('oldAthleteSection');
     const imageInput = document.getElementById('athleteImage');
     const imagePreview = document.getElementById('imagePreview');
     const formTypeInputs = document.querySelectorAll('input[name="formType"]');
-
-    // URL của Google Apps Script
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzy2wkwByCVEVuC227oMPjyqjSOA1j1gksxTiMgi5nwDuZE1wLrEJKeyg9V3KJFUc_wZw/exec';
 
     // Xử lý hiển thị/ẩn phần VĐV cũ dựa vào hình thức
     formTypeInputs.forEach(input => {
