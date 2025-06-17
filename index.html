@@ -1,109 +1,76 @@
-<!-- index.html: Form upload ảnh lên Google Drive + lưu vào Google Sheet -->
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Đăng ký VĐV</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 700px; margin: auto; }
-    label { font-weight: bold; display: block; margin-top: 15px; }
-    input, select { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
-    button { margin-top: 20px; padding: 10px 20px; }
-    #status { margin-top: 20px; font-weight: bold; }
-    pre { background: #eee; padding: 10px; white-space: pre-wrap; word-break: break-word; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Đăng Ký VĐV</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h2>Biểu mẫu đăng ký VĐV</h2>
-  <form id="vdvForm">
-    <label for="type">Hình thức:</label>
-    <select name="type" required>
-      <option value="Bổ sung">Bổ sung</option>
-      <option value="Thay thế">Thay thế</option>
-      <option value="Chuyển nhượng">Chuyển nhượng</option>
-    </select>
+    <div class="container">
+        <h1>Đăng Ký Vận Động Viên</h1>
+        <form id="athleteForm">
+            <div class="form-section">
+                <h2>1. Hình Thức</h2>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="formType" value="thaythe" required>
+                        Thay thế
+                    </label>
+                    <label>
+                        <input type="radio" name="formType" value="bosung">
+                        Bổ sung
+                    </label>
+                    <label>
+                        <input type="radio" name="formType" value="chuyennhuong">
+                        Chuyển nhượng
+                    </label>
+                </div>
+            </div>
 
-    <label for="oldPlayer">VĐV cũ (nếu có):</label>
-    <input type="text" name="oldPlayer">
+            <div class="form-section" id="oldAthleteSection">
+                <h2>2. Thông Tin VĐV Cũ</h2>
+                <div class="form-group">
+                    <label for="oldAthleteName">Tên VĐV cũ:</label>
+                    <input type="text" id="oldAthleteName" name="oldAthleteName">
+                </div>
+            </div>
 
-    <label for="name">VĐV mới:</label>
-    <input type="text" name="name" required>
+            <div class="form-section">
+                <h2>3. Thông Tin VĐV Mới</h2>
+                <div class="form-group">
+                    <label for="newAthleteName">Tên VĐV mới:</label>
+                    <input type="text" id="newAthleteName" name="newAthleteName" required>
+                </div>
+                <div class="form-group">
+                    <label for="birthYear">Năm sinh:</label>
+                    <input type="number" id="birthYear" name="birthYear" required>
+                </div>
+                <div class="form-group">
+                    <label for="registrationClass">Hạng đăng ký:</label>
+                    <input type="text" id="registrationClass" name="registrationClass" required>
+                </div>
+                <div class="form-group">
+                    <label for="referenceClass">Hạng/Thành tích tham chiếu:</label>
+                    <input type="text" id="referenceClass" name="referenceClass" required>
+                </div>
+                <div class="form-group">
+                    <label for="fromTeam">Đến từ đội:</label>
+                    <input type="text" id="fromTeam" name="fromTeam">
+                </div>
+                <div class="form-group">
+                    <label for="athleteImage">Ảnh VĐV:</label>
+                    <input type="file" id="athleteImage" name="athleteImage" accept="image/*" required>
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+            </div>
 
-    <label for="birthYear">Năm sinh:</label>
-    <input type="text" name="birthYear" required>
-
-    <label for="rank">Hạng đăng ký:</label>
-    <input type="text" name="rank" required>
-
-    <label for="reference">Hạng/Thành tích tham chiếu:</label>
-    <input type="text" name="reference">
-
-    <label for="fromTeam">Đến từ đội (nếu có):</label>
-    <input type="text" name="fromTeam">
-
-    <label for="photo">Ảnh VĐV:</label>
-    <input type="file" name="photo" id="photo" accept="image/*" required>
-
-    <button type="submit">Gửi đăng ký</button>
-    <div id="status"></div>
-    <pre id="debugLog"></pre>
-  </form>
-
-  <script>
-    const form = document.getElementById("vdvForm");
-    const statusText = document.getElementById("status");
-    const debugLog = document.getElementById("debugLog");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const file = document.getElementById("photo").files[0];
-      if (!file) {
-        statusText.textContent = "Vui lòng chọn ảnh.";
-        return;
-      }
-
-      const reader = new FileReader();
-
-      reader.onloadend = async function () {
-        const base64Image = reader.result.split(",")[1];
-
-        const data = {
-          type: form.type.value,
-          oldPlayer: form.oldPlayer.value,
-          name: form.name.value,
-          birthYear: form.birthYear.value,
-          rank: form.rank.value,
-          reference: form.reference.value,
-          fromTeam: form.fromTeam.value,
-          imageBase64: base64Image,
-          fileName: file.name
-        };
-
-        debugLog.textContent = "Sending data:\n" + JSON.stringify(data, null, 2);
-
-        try {
-          const response = await fetch("https://script.google.com/macros/s/AKfycbzy2wkwByCVEVuC227oMPjyqjSOA1j1gksxTiMgi5nwDuZE1wLrEJKeyg9V3KJFUc_wZw/exec", {
-            method: "POST",
-            body: JSON.stringify(data),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-
-          const text = await response.text();
-          statusText.textContent = text;
-          debugLog.textContent += "\n\nResponse:\n" + text;
-        } catch (err) {
-          statusText.textContent = "Đã có lỗi xảy ra!";
-          debugLog.textContent += "\n\nFetch error:\n" + err.toString();
-          console.error("Lỗi:", err);
-        }
-      };
-
-      reader.readAsDataURL(file);
-    });
-  </script>
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Gửi thông tin</button>
+            </div>
+        </form>
+    </div>
+    <script src="script.js"></script>
 </body>
-</html>
+</html> 
