@@ -1,76 +1,146 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký VĐV</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký VĐV</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>Đăng Ký Vận Động Viên</h1>
-        <form id="athleteForm">
-            <div class="form-section">
-                <h2>1. Hình Thức</h2>
-                <div class="radio-group">
-                    <label>
-                        <input type="radio" name="formType" value="thaythe" required>
-                        Thay thế
-                    </label>
-                    <label>
-                        <input type="radio" name="formType" value="bosung">
-                        Bổ sung
-                    </label>
-                    <label>
-                        <input type="radio" name="formType" value="chuyennhuong">
-                        Chuyển nhượng
-                    </label>
-                </div>
-            </div>
+<body class="bg-gray-100 text-gray-800">
+  <div class="max-w-3xl mx-auto p-6 bg-white mt-10 rounded-xl shadow-lg">
+    <h2 class="text-2xl font-bold mb-6 text-center">Biểu mẫu Đăng ký VĐV</h2>
 
-            <div class="form-section" id="oldAthleteSection">
-                <h2>2. Thông Tin VĐV Cũ</h2>
-                <div class="form-group">
-                    <label for="oldAthleteName">Tên VĐV cũ:</label>
-                    <input type="text" id="oldAthleteName" name="oldAthleteName">
-                </div>
-            </div>
+    <form id="vdvForm" class="space-y-4">
+      <div>
+        <label class="block font-semibold">Hình thức</label>
+        <select name="formType" id="formType" class="w-full border rounded p-2">
+          <option value="">-- Chọn hình thức --</option>
+          <option value="Thay thế">Thay thế</option>
+          <option value="Bổ sung">Bổ sung</option>
+          <option value="Chuyển nhượng">Chuyển nhượng</option>
+        </select>
+      </div>
 
-            <div class="form-section">
-                <h2>3. Thông Tin VĐV Mới</h2>
-                <div class="form-group">
-                    <label for="newAthleteName">Tên VĐV mới:</label>
-                    <input type="text" id="newAthleteName" name="newAthleteName" required>
-                </div>
-                <div class="form-group">
-                    <label for="birthYear">Năm sinh:</label>
-                    <input type="number" id="birthYear" name="birthYear" required>
-                </div>
-                <div class="form-group">
-                    <label for="registrationClass">Hạng đăng ký:</label>
-                    <input type="text" id="registrationClass" name="registrationClass" required>
-                </div>
-                <div class="form-group">
-                    <label for="referenceClass">Hạng/Thành tích tham chiếu:</label>
-                    <input type="text" id="referenceClass" name="referenceClass" required>
-                </div>
-                <div class="form-group">
-                    <label for="fromTeam">Đến từ đội:</label>
-                    <input type="text" id="fromTeam" name="fromTeam">
-                </div>
-                <div class="form-group">
-                    <label for="athleteImage">Ảnh VĐV:</label>
-                    <input type="file" id="athleteImage" name="athleteImage" accept="image/*" required>
-                    <div id="imagePreview" class="image-preview"></div>
-                </div>
-            </div>
+      <!-- Thay thế -->
+      <div id="replaceSection" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block">VĐV cần thay thế</label>
+            <input type="text" name="replace_oldPlayer" class="w-full border rounded p-2">
+          </div>
+          <div>
+            <label class="block">VĐV thay thế</label>
+            <input type="text" name="replace_newPlayer" class="w-full border rounded p-2">
+          </div>
+          <div>
+            <label class="block">Năm sinh</label>
+            <input type="text" name="replace_birthYear" class="w-full border rounded p-2">
+          </div>
+          <div>
+            <label class="block">Hạng đăng ký</label>
+            <input type="text" name="replace_rank" class="w-full border rounded p-2">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block">Hình ảnh VĐV thay thế</label>
+            <input type="file" name="replace_image" class="w-full border rounded p-2">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block">Hạng/Điểm/Thành tích tham chiếu</label>
+            <input type="text" name="replace_ref" class="w-full border rounded p-2">
+          </div>
+        </div>
+      </div>
 
-            <div class="form-actions">
-                <button type="submit" class="submit-btn">Gửi thông tin</button>
-            </div>
-        </form>
-    </div>
-    <script src="script.js"></script>
+      <!-- Bổ sung -->
+      <div id="addSection" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block">VĐV bổ sung</label>
+            <input type="text" name="add_player" class="w-full border rounded p-2">
+          </div>
+          <div>
+            <label class="block">Năm sinh</label>
+            <input type="text" name="add_birthYear" class="w-full border rounded p-2">
+          </div>
+          <div>
+            <label class="block">Hạng đăng ký</label>
+            <input type="text" name="add_rank" class="w-full border rounded p-2">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block">Hình ảnh VĐV bổ sung</label>
+            <input type="file" name="add_image" class="w-full border rounded p-2">
+          </div>
+        </div>
+      </div>
+
+      <!-- Chuyển nhượng -->
+      <div id="transferSection" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block">VĐV chuyển nhượng</label>
+            <input type="text" name="transfer_player" class="w-full border rounded p-2">
+          </div>
+          <div>
+            <label class="block">Đến từ đội</label>
+            <input type="text" name="transfer_fromTeam" class="w-full border rounded p-2">
+          </div>
+          <div>
+            <label class="block">Năm sinh</label>
+            <input type="text" name="transfer_birthYear" class="w-full border rounded p-2">
+          </div>
+          <div>
+            <label class="block">Hạng hiện tại</label>
+            <input type="text" name="transfer_rank" class="w-full border rounded p-2">
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
+        Gửi đăng ký
+      </button>
+      <div id="status" class="text-center mt-4 font-semibold text-green-600"></div>
+    </form>
+  </div>
+
+  <script>
+    const formType = document.getElementById("formType");
+    const replaceSection = document.getElementById("replaceSection");
+    const addSection = document.getElementById("addSection");
+    const transferSection = document.getElementById("transferSection");
+
+    formType.addEventListener("change", () => {
+      replaceSection.classList.add("hidden");
+      addSection.classList.add("hidden");
+      transferSection.classList.add("hidden");
+
+      if (formType.value === "Thay thế") replaceSection.classList.remove("hidden");
+      else if (formType.value === "Bổ sung") addSection.classList.remove("hidden");
+      else if (formType.value === "Chuyển nhượng") transferSection.classList.remove("hidden");
+    });
+
+    const form = document.getElementById("vdvForm");
+    const statusText = document.getElementById("status");
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzy2wkwByCVEVuC227oMPjyqjSOA1j1gksxTiMgi5nwDuZE1wLrEJKeyg9V3KJFUc_wZw/exec";
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      try {
+        await fetch(scriptURL, {
+          method: "POST",
+          body: formData,
+        });
+        statusText.textContent = "Đăng ký thành công!";
+        form.reset();
+        replaceSection.classList.add("hidden");
+        addSection.classList.add("hidden");
+        transferSection.classList.add("hidden");
+      } catch (err) {
+        statusText.textContent = "Đã có lỗi xảy ra!";
+        statusText.classList.remove("text-green-600");
+        statusText.classList.add("text-red-600");
+      }
+    });
+  </script>
 </body>
-</html> 
+</html>
