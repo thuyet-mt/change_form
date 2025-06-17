@@ -36,6 +36,9 @@ async function submitForm(event) {
 
         // Upload image first
         const imageUrl = await uploadImage(imageFile);
+        if (!imageUrl) {
+            throw new Error('Không thể upload ảnh');
+        }
         
         // Prepare form data
         const submissionData = {
@@ -81,10 +84,16 @@ function uploadImage(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = function(e) {
+            // Convert ArrayBuffer to Base64
+            const base64 = btoa(
+                new Uint8Array(e.target.result)
+                    .reduce((data, byte) => data + String.fromCharCode(byte), '')
+            );
+            
             const obj = {
                 filename: file.name,
                 mimeType: file.type,
-                bytes: [...new Int8Array(e.target.result)]
+                bytes: base64
             };
             
             google.script.run
