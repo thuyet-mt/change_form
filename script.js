@@ -204,6 +204,7 @@ async function submitForm(formData) {
         // Gửi dữ liệu lên server
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
+            mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -219,6 +220,10 @@ async function submitForm(formData) {
             })
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const result = await response.json();
         if (!result.success) {
             throw new Error(result.message);
@@ -226,6 +231,6 @@ async function submitForm(formData) {
         return result;
     } catch (error) {
         console.error('Error submitting form:', error);
-        throw error;
+        throw new Error('Lỗi khi gửi form: ' + error.message);
     }
 } 
