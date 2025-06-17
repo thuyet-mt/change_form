@@ -1,146 +1,100 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đăng ký VĐV</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký VĐV</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://apis.google.com/js/api.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .required-field::after {
+            content: " *";
+            color: red;
+        }
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
-  <div class="max-w-3xl mx-auto p-6 bg-white mt-10 rounded-xl shadow-lg">
-    <h2 class="text-2xl font-bold mb-6 text-center">Biểu mẫu Đăng ký VĐV</h2>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Đăng ký VĐV</h2>
+            <form id="athleteForm" onsubmit="return submitForm(event)">
+                <div class="mb-3">
+                    <label for="formType" class="form-label required-field">Hình thức</label>
+                    <select class="form-select" id="formType" name="formType" required>
+                        <option value="">Chọn hình thức</option>
+                        <option value="Bổ sung">Bổ sung</option>
+                        <option value="Thay thế">Thay thế</option>
+                        <option value="Chuyển nhượng">Chuyển nhượng</option>
+                    </select>
+                </div>
 
-    <form id="vdvForm" class="space-y-4">
-      <div>
-        <label class="block font-semibold">Hình thức</label>
-        <select name="formType" id="formType" class="w-full border rounded p-2">
-          <option value="">-- Chọn hình thức --</option>
-          <option value="Thay thế">Thay thế</option>
-          <option value="Bổ sung">Bổ sung</option>
-          <option value="Chuyển nhượng">Chuyển nhượng</option>
-        </select>
-      </div>
+                <div class="mb-3">
+                    <label for="oldAthleteName" class="form-label">Tên VĐV cũ (nếu có)</label>
+                    <input type="text" class="form-control" id="oldAthleteName" name="oldAthleteName">
+                </div>
 
-      <!-- Thay thế -->
-      <div id="replaceSection" class="hidden">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block">VĐV cần thay thế</label>
-            <input type="text" name="replace_oldPlayer" class="w-full border rounded p-2">
-          </div>
-          <div>
-            <label class="block">VĐV thay thế</label>
-            <input type="text" name="replace_newPlayer" class="w-full border rounded p-2">
-          </div>
-          <div>
-            <label class="block">Năm sinh</label>
-            <input type="text" name="replace_birthYear" class="w-full border rounded p-2">
-          </div>
-          <div>
-            <label class="block">Hạng đăng ký</label>
-            <input type="text" name="replace_rank" class="w-full border rounded p-2">
-          </div>
-          <div class="md:col-span-2">
-            <label class="block">Hình ảnh VĐV thay thế</label>
-            <input type="file" name="replace_image" class="w-full border rounded p-2">
-          </div>
-          <div class="md:col-span-2">
-            <label class="block">Hạng/Điểm/Thành tích tham chiếu</label>
-            <input type="text" name="replace_ref" class="w-full border rounded p-2">
-          </div>
+                <div class="mb-3">
+                    <label for="newAthleteName" class="form-label required-field">Tên VĐV mới</label>
+                    <input type="text" class="form-control" id="newAthleteName" name="newAthleteName" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="birthYear" class="form-label required-field">Năm sinh</label>
+                    <input type="number" class="form-control" id="birthYear" name="birthYear" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="registrationRank" class="form-label required-field">Hạng đăng ký</label>
+                    <input type="text" class="form-control" id="registrationRank" name="registrationRank" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="referenceRank" class="form-label">Hạng/Thành tích tham chiếu</label>
+                    <input type="text" class="form-control" id="referenceRank" name="referenceRank">
+                </div>
+
+                <div class="mb-3">
+                    <label for="team" class="form-label">Đến từ đội</label>
+                    <input type="text" class="form-control" id="team" name="team">
+                </div>
+
+                <div class="mb-3">
+                    <label for="athleteImage" class="form-label required-field">Ảnh VĐV</label>
+                    <input type="file" class="form-control" id="athleteImage" name="athleteImage" accept="image/*" required onchange="previewImage(event)">
+                    <img id="imagePreview" class="preview-image" alt="Preview">
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Gửi đăng ký</button>
+                </div>
+            </form>
         </div>
-      </div>
+    </div>
 
-      <!-- Bổ sung -->
-      <div id="addSection" class="hidden">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block">VĐV bổ sung</label>
-            <input type="text" name="add_player" class="w-full border rounded p-2">
-          </div>
-          <div>
-            <label class="block">Năm sinh</label>
-            <input type="text" name="add_birthYear" class="w-full border rounded p-2">
-          </div>
-          <div>
-            <label class="block">Hạng đăng ký</label>
-            <input type="text" name="add_rank" class="w-full border rounded p-2">
-          </div>
-          <div class="md:col-span-2">
-            <label class="block">Hình ảnh VĐV bổ sung</label>
-            <input type="file" name="add_image" class="w-full border rounded p-2">
-          </div>
-        </div>
-      </div>
-
-      <!-- Chuyển nhượng -->
-      <div id="transferSection" class="hidden">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block">VĐV chuyển nhượng</label>
-            <input type="text" name="transfer_player" class="w-full border rounded p-2">
-          </div>
-          <div>
-            <label class="block">Đến từ đội</label>
-            <input type="text" name="transfer_fromTeam" class="w-full border rounded p-2">
-          </div>
-          <div>
-            <label class="block">Năm sinh</label>
-            <input type="text" name="transfer_birthYear" class="w-full border rounded p-2">
-          </div>
-          <div>
-            <label class="block">Hạng hiện tại</label>
-            <input type="text" name="transfer_rank" class="w-full border rounded p-2">
-          </div>
-        </div>
-      </div>
-
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
-        Gửi đăng ký
-      </button>
-      <div id="status" class="text-center mt-4 font-semibold text-green-600"></div>
-    </form>
-  </div>
-
-  <script>
-    const formType = document.getElementById("formType");
-    const replaceSection = document.getElementById("replaceSection");
-    const addSection = document.getElementById("addSection");
-    const transferSection = document.getElementById("transferSection");
-
-    formType.addEventListener("change", () => {
-      replaceSection.classList.add("hidden");
-      addSection.classList.add("hidden");
-      transferSection.classList.add("hidden");
-
-      if (formType.value === "Thay thế") replaceSection.classList.remove("hidden");
-      else if (formType.value === "Bổ sung") addSection.classList.remove("hidden");
-      else if (formType.value === "Chuyển nhượng") transferSection.classList.remove("hidden");
-    });
-
-    const form = document.getElementById("vdvForm");
-    const statusText = document.getElementById("status");
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzy2wkwByCVEVuC227oMPjyqjSOA1j1gksxTiMgi5nwDuZE1wLrEJKeyg9V3KJFUc_wZw/exec";
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(form);
-      try {
-        await fetch(scriptURL, {
-          method: "POST",
-          body: formData,
-        });
-        statusText.textContent = "Đăng ký thành công!";
-        form.reset();
-        replaceSection.classList.add("hidden");
-        addSection.classList.add("hidden");
-        transferSection.classList.add("hidden");
-      } catch (err) {
-        statusText.textContent = "Đã có lỗi xảy ra!";
-        statusText.classList.remove("text-green-600");
-        statusText.classList.add("text-red-600");
-      }
-    });
-  </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
 </body>
-</html>
+</html> 
